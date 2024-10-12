@@ -100,7 +100,8 @@ func (o *operation) readline(deadline chan struct{}) ([]rune, error) {
 		keepInCompleteMode := false
 		r, err := o.t.GetRune(deadline)
 
-		if cfg := o.GetConfig(); cfg.FuncFilterInputRune != nil && err == nil {
+		cfg := o.GetConfig()
+		if cfg.FuncFilterInputRune != nil && err == nil {
 			var process bool
 			r, process = cfg.FuncFilterInputRune(r)
 			if !process {
@@ -159,6 +160,7 @@ func (o *operation) readline(deadline chan struct{}) ([]rune, error) {
 		var result []rune
 
 		isTypingRune := false
+		ignoreCtrlZ := cfg.DisableCtrlZ || platform.IsWindows
 
 		switch r {
 		case CharBell:
@@ -217,7 +219,7 @@ func (o *operation) readline(deadline chan struct{}) ([]rune, error) {
 			}
 			o.buf.Backspace()
 		case CharCtrlZ:
-			if !platform.IsWindows {
+			if !ignoreCtrlZ {
 				o.buf.Clean()
 				o.t.SleepToResume()
 				o.Refresh()

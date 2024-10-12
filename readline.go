@@ -70,6 +70,9 @@ type Config struct {
 	FuncGetSize        func() (width int, height int)
 	FuncOnWidthChanged func(func())
 
+	// Ignore Ctrl-Z
+	DisableCtrlZ bool
+
 	// private fields
 	inited        bool
 	isInteractive bool
